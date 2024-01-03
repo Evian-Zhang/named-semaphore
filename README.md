@@ -54,10 +54,10 @@ cargo install named-sem --features=commandline --bin preempt-do
 Then you can use the following instructions to do the things above:
 
 ```shell
-preempt-do --name /my-semaphore --count 2 7z a A.7z A
-preempt-do --name /my-semaphore --count 2 7z a B.7z B
-preempt-do --name /my-semaphore --count 2 7z a C.7z C
-preempt-do --name /my-semaphore --count 2 7z a D.7z D
+preempt-do --name /my-semaphore --count 2 -- 7z a A.7z A
+preempt-do --name /my-semaphore --count 2 -- 7z a B.7z B
+preempt-do --name /my-semaphore --count 2 -- 7z a C.7z C
+preempt-do --name /my-semaphore --count 2 -- 7z a D.7z D
 ```
 
 This will allow there to be no more than two `7z` processes across the system.
