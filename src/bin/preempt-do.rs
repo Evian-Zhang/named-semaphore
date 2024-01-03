@@ -4,12 +4,18 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use named_semaphore::NamedSemaphore;
 
+/// Execute command preemptively.
 #[derive(Parser)]
 struct Args {
+    /// Name of the semaphore.
+    ///
+    /// In Linux, this name should begin with a "/".
     #[arg(long)]
     name: String,
+    /// Semaphore's initial value.
     #[arg(long)]
     count: usize,
+    /// Command to execute.
     #[arg(last = true)]
     command: Vec<String>,
 }
