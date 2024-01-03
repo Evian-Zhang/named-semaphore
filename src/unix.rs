@@ -21,7 +21,7 @@ impl RawNamedSemaphore {
             libc::sem_open(
                 name.as_ptr() as *const c_char,
                 O_CREAT,
-                S_IRWXU | S_IRWXG | S_IRWXO,
+                (S_IRWXU | S_IRWXG | S_IRWXO) as libc::c_uint,
                 initial_value,
             )
         };
