@@ -1,9 +1,16 @@
 [package]
 name = "named-semaphore"
 version = "0.1.0"
+authors = ["Evian-Zhang <evianzhang1999@163.com>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MIT OR Apache-2.0"
+description = "Named semaphore for Linux & Windows."
+homepage = "https://github.com/Evian-Zhang/named-semaphore"
+documentation = "https://docs.rs/named-semaphore"
+repository = "https://github.com/Evian-Zhang/named-semaphore"
+readme = "README.md"
+keywords = ["semaphore", "sem", "sem_open", "CreateSemaphore"]
+categories = ["os"]
 
 [dependencies]
 thiserror = "1"
