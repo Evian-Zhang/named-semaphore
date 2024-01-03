@@ -6,7 +6,7 @@ To use this crate, add the following to `Cargo.toml`:
 
 ```toml
 [dependencies]
-named-semaphore = "0.1"
+named-sem = "0.1"
 ```
 
 ## Background
@@ -18,7 +18,7 @@ In Linux, we use the [POSIX semaphore](https://www.man7.org/linux/man-pages/man7
 ## Examples
 
 ```rust
-use named_semaphore::{NamedSemaphore, Error};
+use named_sem::{NamedSemaphore, Error};
 
 # fn do_heavy_things() {}
 fn use_named_semaphore() -> Result<(), Error> {
@@ -48,7 +48,7 @@ cargo build --release --features=commandline --bin preempt-do
 Or you can install it by
 
 ```shell
-cargo install named-semaphore --features=commandline --bin preempt-do
+cargo install named-sem --features=commandline --bin preempt-do
 ```
 
 Then you can use the following instructions to do the things above:

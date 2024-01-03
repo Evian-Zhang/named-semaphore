@@ -2,7 +2,7 @@ use std::process::Command;
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use named_semaphore::NamedSemaphore;
+use named_sem::NamedSemaphore;
 
 /// Execute command preemptively.
 #[derive(Parser)]
