@@ -1,9 +1,13 @@
 mod error;
 #[cfg(unix)]
 mod unix;
+#[cfg(windows)]
+mod windows;
 
 #[cfg(unix)]
 use unix::RawNamedSemaphore;
+#[cfg(windows)]
+use windows::RawNamedSemaphore;
 
 pub use error::Error;
 
