@@ -33,4 +33,12 @@ impl NamedSemaphore {
     pub fn post(&mut self) -> Result<()> {
         self.raw_named_semaphore.post()
     }
+
+    pub fn wait_then_post<T, F: FnOnce() -> T>(&mut self, action: F) -> Result<T> {
+        self.wait()?;
+        let result = action();
+        self.post()?;
+
+        Ok(result)
+    }
 }

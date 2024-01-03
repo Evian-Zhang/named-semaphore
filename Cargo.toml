@@ -7,9 +7,17 @@ edition = "2021"
 
 [dependencies]
 thiserror = "1"
+# Used for commandline
+clap = { version = "4", features = ["derive"], optional = true }
+# Used for commandline
+anyhow = { version = "1", optional = true }
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
 
-[workspace]
-members = ["preempt-do"]
+[features]
+commandline = ["clap", "anyhow"]
+
+[[bin]]
+name = "preempt-do"
+required-features = ["commandline"]

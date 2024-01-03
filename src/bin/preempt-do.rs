@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::Parser;
 use named_semaphore::NamedSemaphore;
 
@@ -29,12 +29,12 @@ fn main() -> Result<()> {
     command.args(args);
 
     let mut semaphore = NamedSemaphore::create(name, count as u32)?;
-    semaphore.wait()?;
 
-    let mut child = command.spawn()?;
-    child.wait()?;
-
-    semaphore.post()?;
+    semaphore.wait_then_post(|| -> Result<()> {
+        let mut child = command.spawn().context("Failed to spawn command")?;
+        child.wait().context("Failed to wait for child")?;
+        Ok(())
+    })??;
 
     Ok(())
 }

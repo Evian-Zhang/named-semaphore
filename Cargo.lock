@@ -118,17 +118,10 @@ checksum = "302d7ab3130588088d277783b1e2d2e10c9e9e4a16dd9050e6ec93fb3e7048f4"
 name = "named-semaphore"
 version = "0.1.0"
 dependencies = [
- "libc",
- "thiserror",
-]
-
-[[package]]
-name = "preempt-do"
-version = "0.1.0"
-dependencies = [
  "anyhow",
  "clap",
- "named-semaphore",
+ "libc",
+ "thiserror",
 ]
 
 [[package]]
