@@ -45,6 +45,19 @@ impl RawNamedSemaphore {
         Ok(())
     }
 
+    pub(crate) fn timedwait(&mut self, dur: Duration) -> Result<()> {
+        let wait_event = unsafe { WaitForSingleObject(self.handle, dur.as_millis() as i32) };
+        if wait_event == WAIT_FAILED {
+            if let Err(last_error) = unsafe { GetLastError() } {
+                return Err(Error::WaitFailed(last_error));
+            } else {
+                return Err(Error::Unexpected);
+            }
+        }
+
+        Ok(())
+    }
+
     pub(crate) fn try_wait(&mut self) -> Result<()> {
         let wait_event = unsafe { WaitForSingleObject(self.handle, 0) };
         match wait_event {

@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::{ffi::CString, mem::MaybeUninit, time::Duration};
 
 use libc::{c_char, sem_t, O_CREAT, SEM_FAILED, S_IRWXG, S_IRWXO, S_IRWXU};
 
@@ -37,6 +37,24 @@ impl RawNamedSemaphore {
         if unsafe { libc::sem_wait(self.raw_ptr) } == -1 {
             return Err(Error::WaitFailed(std::io::Error::last_os_error()));
         }
+        Ok(())
+    }
+
+    pub(crate) fn timedwait(&mut self, dur: Duration) -> Result<()> {
+        let mut timespec: libc::timespec = unsafe { MaybeUninit::zeroed().assume_init() };
+        if unsafe { libc::clock_gettime(libc::CLOCK_REALTIME, &mut timespec) } != 0 {
+            return Err(Error::WaitFailed(std::io::Error::last_os_error()));
+        }
+
+        timespec.tv_sec += dur.as_secs() as i64;
+        timespec.tv_nsec += dur.subsec_nanos() as i64;
+        timespec.tv_sec += timespec.tv_nsec / 1_000_000_000;
+        timespec.tv_nsec %= 1_000_000_000;
+
+        if unsafe { libc::sem_timedwait(self.raw_ptr, &timespec) } == -1 {
+            return Err(Error::WaitFailed(std::io::Error::last_os_error()));
+        }
+
         Ok(())
     }
 
