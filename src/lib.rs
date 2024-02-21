@@ -6,6 +6,8 @@ mod unix;
 #[cfg(windows)]
 mod windows;
 
+use std::time::Duration;
+
 #[cfg(unix)]
 use unix::RawNamedSemaphore;
 #[cfg(windows)]
@@ -63,6 +65,16 @@ impl NamedSemaphore {
     /// [`WaitForSingleObject`](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject).
     pub fn wait(&mut self) -> Result<()> {
         self.raw_named_semaphore.wait()
+    }
+
+    /// Wait for the semaphore and decrease it, block for `dur` if current semaphore's count is 0.
+    ///
+    /// In Linux, the underlined implementation is [`sem_timedwait`](https://www.man7.org/linux/man-pages/man3/sem_timedwait.3.html).
+    ///
+    /// In Windows, the underlined implementation is
+    /// [`WaitForSingleObject`](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject).
+    pub fn timed_wait(&mut self, dur: Duration) -> Result<()> {
+        self.raw_named_semaphore.timedwait(dur)
     }
 
     /// Wait for the semaphore and decrease it, raise [`Error::WouldBlock`] if current
