@@ -31,6 +31,9 @@ pub enum Error {
     /// Wait timeout
     #[error("Wait timeout")]
     WaitTimeout,
+    /// Invalid wait timeout limit
+    #[error("Invalid wait timeout limit")]
+    InvalidWaitTimeout,
     /// Named semaphore would block.
     ///
     /// This error will only occur when calling [`NamedSemaphore::try_wait`][crate::NamedSemaphore::try_wait]

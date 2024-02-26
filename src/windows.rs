@@ -25,7 +25,7 @@ impl RawNamedSemaphore {
         let name = name.as_ref();
         let name = HSTRING::from(name);
         let name = PCWSTR(name.as_ptr());
-        let Ok(initial_value) = <i32 as TryFrom<u32>>::try_from(initial_value) else {
+        let Ok(initial_value) = i32::try_from(initial_value) else {
             return Err(Error::InappropriateCount);
         };
         let handle = unsafe { CreateSemaphoreW(None, initial_value, initial_value, name) }
@@ -48,17 +48,22 @@ impl RawNamedSemaphore {
     }
 
     pub(crate) fn timedwait(&mut self, dur: Duration) -> Result<()> {
-        let wait_event =
-            unsafe { WaitForSingleObject(self.handle, u32::try_from(dur.as_millis()).unwrap()) };
-        if wait_event == WAIT_FAILED {
-            if let Err(last_error) = unsafe { GetLastError() } {
-                return Err(Error::WaitFailed(last_error));
-            } else {
-                return Err(Error::Unexpected);
+        let Ok(wait_timeout) = u32::try_from(dur.as_millis()) else {
+            return Err(Error::InvalidWaitTimeout);
+        };
+        let wait_event = unsafe { WaitForSingleObject(self.handle, wait_timeout) };
+        match wait_event {
+            WAIT_OBJECT_0 | WAIT_ABANDONED => Ok(()),
+            WAIT_FAILED => {
+                if let Err(last_error) = unsafe { GetLastError() } {
+                    Err(Error::WaitFailed(last_error))
+                } else {
+                    Err(Error::Unexpected)
+                }
             }
+            WAIT_TIMEOUT => Err(Error::WaitTimeout),
+            _ => Err(Error::Unexpected),
         }
-
-        Ok(())
     }
 
     pub(crate) fn try_wait(&mut self) -> Result<()> {
