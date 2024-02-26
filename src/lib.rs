@@ -6,6 +6,7 @@ mod unix;
 #[cfg(windows)]
 mod windows;
 
+#[cfg(any(target_os = "linux", target_os = "windows"))]
 use std::time::Duration;
 
 #[cfg(unix)]
@@ -73,6 +74,7 @@ impl NamedSemaphore {
     ///
     /// In Windows, the underlined implementation is
     /// [`WaitForSingleObject`](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject).
+    #[cfg(any(target_os = "linux", target_os = "windows"))]
     pub fn timed_wait(&mut self, dur: Duration) -> Result<()> {
         self.raw_named_semaphore.timedwait(dur)
     }

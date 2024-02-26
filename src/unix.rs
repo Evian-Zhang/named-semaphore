@@ -1,4 +1,6 @@
-use std::{ffi::CString, mem::MaybeUninit, time::Duration};
+use std::ffi::CString;
+#[cfg(target_os = "linux")]
+use std::{mem::MaybeUninit, time::Duration};
 
 use libc::{c_char, sem_t, O_CREAT, SEM_FAILED, S_IRWXG, S_IRWXO, S_IRWXU};
 
@@ -40,6 +42,7 @@ impl RawNamedSemaphore {
         Ok(())
     }
 
+    #[cfg(target_os = "linux")]
     pub(crate) fn timedwait(&mut self, dur: Duration) -> Result<()> {
         let mut timespec: libc::timespec = unsafe { MaybeUninit::zeroed().assume_init() };
         if unsafe { libc::clock_gettime(libc::CLOCK_REALTIME, &mut timespec) } != 0 {
