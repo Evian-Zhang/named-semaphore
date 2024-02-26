@@ -73,6 +73,8 @@ impl NamedSemaphore {
     ///
     /// In Windows, the underlined implementation is
     /// [`WaitForSingleObject`](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject).
+    ///
+    /// Note that macOS did not provide such functionality, see <https://stackoverflow.com/q/641126/10005095>.
     pub fn timed_wait(&mut self, dur: Duration) -> Result<()> {
         self.raw_named_semaphore.timedwait(dur)
     }
