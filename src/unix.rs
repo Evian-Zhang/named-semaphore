@@ -52,7 +52,13 @@ impl RawNamedSemaphore {
         timespec.tv_nsec %= 1_000_000_000;
 
         if unsafe { libc::sem_timedwait(self.raw_ptr, &timespec) } == -1 {
-            return Err(Error::WaitFailed(std::io::Error::last_os_error()));
+            let last_error = std::io::Error::last_os_error();
+            let error = if last_error.kind() == std::io::ErrorKind::TimedOut {
+                Error::WaitTimeout
+            } else {
+                Error::WaitFailed(last_error)
+            };
+            return Err(error);
         }
 
         Ok(())

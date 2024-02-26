@@ -28,6 +28,9 @@ pub enum Error {
     #[cfg(windows)]
     #[error("Failed to wait semaphore: {0}")]
     WaitFailed(#[source] windows::core::Error),
+    /// Wait timeout
+    #[error("Wait timeout")]
+    WaitTimeout,
     /// Named semaphore would block.
     ///
     /// This error will only occur when calling [`NamedSemaphore::try_wait`][crate::NamedSemaphore::try_wait]
