@@ -46,8 +46,18 @@ impl RawNamedSemaphore {
             return Err(Error::WaitFailed(std::io::Error::last_os_error()));
         }
 
-        timespec.tv_sec += dur.as_secs() as i64;
-        timespec.tv_nsec += dur.subsec_nanos() as i64;
+        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
+        {
+            timespec.tv_sec += dur.as_secs() as i64;
+            timespec.tv_nsec += dur.subsec_nanos() as i64;
+        }
+
+        #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
+        {
+            timespec.tv_sec += dur.as_secs() as libc::c_long;
+            timespec.tv_nsec += dur.subsec_nanos() as libc::c_long;
+        }
+
         timespec.tv_sec += timespec.tv_nsec / 1_000_000_000;
         timespec.tv_nsec %= 1_000_000_000;
 
