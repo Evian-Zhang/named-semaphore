@@ -6,7 +6,7 @@ To use this crate, add the following to `Cargo.toml`:
 
 ```toml
 [dependencies]
-named-sem = "0.1"
+named-sem = "0.2"
 ```
 
 ## Background
