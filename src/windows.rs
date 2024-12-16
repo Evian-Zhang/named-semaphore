@@ -37,7 +37,7 @@ impl RawNamedSemaphore {
     pub(crate) fn wait(&mut self) -> Result<()> {
         let wait_event = unsafe { WaitForSingleObject(self.handle, INFINITE) };
         if wait_event == WAIT_FAILED {
-            if let Err(last_error) = unsafe { GetLastError() } {
+            if let Err(last_error) = unsafe { GetLastError().ok() } {
                 return Err(Error::WaitFailed(last_error));
             } else {
                 return Err(Error::Unexpected);
@@ -55,7 +55,7 @@ impl RawNamedSemaphore {
         match wait_event {
             WAIT_OBJECT_0 | WAIT_ABANDONED => Ok(()),
             WAIT_FAILED => {
-                if let Err(last_error) = unsafe { GetLastError() } {
+                if let Err(last_error) = unsafe { GetLastError().ok() } {
                     Err(Error::WaitFailed(last_error))
                 } else {
                     Err(Error::Unexpected)
@@ -71,7 +71,7 @@ impl RawNamedSemaphore {
         match wait_event {
             WAIT_OBJECT_0 | WAIT_ABANDONED => Ok(()),
             WAIT_FAILED => {
-                if let Err(last_error) = unsafe { GetLastError() } {
+                if let Err(last_error) = unsafe { GetLastError().ok() } {
                     Err(Error::WaitFailed(last_error))
                 } else {
                     Err(Error::Unexpected)
