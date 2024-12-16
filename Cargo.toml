@@ -13,7 +13,7 @@ keywords = ["semaphore", "sem", "sem_open", "CreateSemaphore"]
 categories = ["os"]
 
 [dependencies]
-thiserror = "1"
+thiserror = "2"
 # Used for commandline
 clap = { version = "4", features = ["derive"], optional = true }
 # Used for commandline
@@ -23,7 +23,7 @@ anyhow = { version = "1", optional = true }
 libc = "0.2"
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.52", features = ["Win32_Foundation", "Win32_Security", "Win32_System", "Win32_System_Threading"] }
+windows = { version = "0.58", features = ["Win32_Foundation", "Win32_Security", "Win32_System", "Win32_System_Threading"] }
 
 [features]
 commandline = ["clap", "anyhow"]
