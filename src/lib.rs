@@ -35,7 +35,8 @@ impl NamedSemaphore {
     /// [`sem_open`](https://www.man7.org/linux/man-pages/man3/sem_open.3.html).
     ///
     /// In Windows, `name` should be no longer than `MAX_PATH`. `initial_value` should
-    /// fit in `i32` and not less than 0. The underelined implementation is
+    /// fit in `i32` and not less than 0, the maximum count of the semaphore is set to the initial value.
+    /// The underlying implementation is
     /// [`CreateSemaphore`](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createsemaphorea)
     ///
     /// # Notes
@@ -51,6 +52,45 @@ impl NamedSemaphore {
     /// or restarting the operating system.
     pub fn create<T: AsRef<str>>(name: T, initial_value: u32) -> Result<Self> {
         let raw_named_semaphore = RawNamedSemaphore::create(name, initial_value)?;
+
+        Ok(Self {
+            raw_named_semaphore,
+        })
+    }
+
+    /// Create a named semaphore with name and initial value, or open it if there
+    /// has already been a semaphore with the same name across system (in which case,
+    /// the `name` and `initial_value` are ignored).
+    /// Max value is used on windows, where the semaphore can have an internal limit. It does not affect linux.
+    ///
+    /// In Linux, `name` should starts with "/" and is no longer than 250, and does not
+    /// contain "/" after the prefix "/". `initial_value` should not greater than
+    /// `SEM_VALUE_MAX`. The underlined implementation is
+    /// [`sem_open`](https://www.man7.org/linux/man-pages/man3/sem_open.3.html).
+    /// Max value does not have an effect on linux.
+    ///
+    /// In Windows, `name` should be no longer than `MAX_PATH`. `initial_value` and `max_value` should
+    /// fit in `i32` and not less than 0. The underlying implementation is
+    /// [`CreateSemaphore`](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createsemaphorea)
+    ///
+    /// # Notes
+    ///
+    /// The named semaphore will be closed when the `NamedSemaphore` drops.
+    ///
+    /// In Windows, if all accesses to named semaphore have been closed, the semaphore
+    /// will be destroyed.
+    ///
+    /// In Linux, the named semaphore created will not be destroyed even if all processes accessing
+    /// it has been terminated. The named semaphore can be destroyed by removing corresponding
+    /// file in `/dev/shm`, or using [`sem_unlink`](https://www.man7.org/linux/man-pages/man3/sem_unlink.3.html),
+    /// or restarting the operating system.
+    pub fn create_with_max<T: AsRef<str>>(
+        name: T,
+        initial_value: u32,
+        max_value: u32,
+    ) -> Result<Self> {
+        let raw_named_semaphore =
+            RawNamedSemaphore::create_with_max(name, initial_value, max_value)?;
 
         Ok(Self {
             raw_named_semaphore,
