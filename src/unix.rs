@@ -15,6 +15,17 @@ impl RawNamedSemaphore {
     //
     // The `name` should starts with "/"
     pub(crate) fn create<T: AsRef<str>>(name: T, initial_value: u32) -> Result<Self> {
+        Self::create_with_max(name, initial_value, initial_value)
+    }
+
+    // NOTE:
+    //
+    // The `name` should starts with "/"
+    pub(crate) fn create_with_max<T: AsRef<str>>(
+        name: T,
+        initial_value: u32,
+        _max_value: u32,
+    ) -> Result<Self> {
         let name = name.as_ref();
         let name = CString::new(name.as_bytes()).map_err(|_| Error::InvalidCharacter)?;
         let raw_ptr = unsafe {

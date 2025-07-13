@@ -20,15 +20,30 @@ pub(crate) struct RawNamedSemaphore {
 impl RawNamedSemaphore {
     // NOTE:
     //
-    // `initial_value` should not exceed `i32::MAX`
+    // `initial_value` should not exceed `i32::MAX`.
+    // `initial_value` is used as `max_value`.
     pub(crate) fn create<T: AsRef<str>>(name: T, initial_value: u32) -> Result<Self> {
+        Self::create_with_max(name, initial_value, initial_value)
+    }
+
+    // NOTE:
+    //
+    // `initial_value` should not exceed `i32::MAX`
+    pub(crate) fn create_with_max<T: AsRef<str>>(
+        name: T,
+        initial_value: u32,
+        max_value: u32,
+    ) -> Result<Self> {
         let name = name.as_ref();
         let name = HSTRING::from(name);
         let name = PCWSTR(name.as_ptr());
         let Ok(initial_value) = i32::try_from(initial_value) else {
             return Err(Error::InappropriateCount);
         };
-        let handle = unsafe { CreateSemaphoreW(None, initial_value, initial_value, name) }
+        let Ok(max_value) = i32::try_from(max_value) else {
+            return Err(Error::InappropriateCount);
+        };
+        let handle = unsafe { CreateSemaphoreW(None, initial_value, max_value, name) }
             .map_err(|error| Error::CreateFailed(error))?;
 
         Ok(Self { handle })
