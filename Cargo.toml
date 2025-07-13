@@ -1,6 +1,6 @@
 [package]
 name = "named-sem"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Evian-Zhang <evianzhang1999@163.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -23,7 +23,12 @@ anyhow = { version = "1", optional = true }
 libc = "0.2"
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.58", features = ["Win32_Foundation", "Win32_Security", "Win32_System", "Win32_System_Threading"] }
+windows = { version = "0.61", features = [
+  "Win32_Foundation",
+  "Win32_Security",
+  "Win32_System",
+  "Win32_System_Threading",
+] }
 
 [features]
 commandline = ["clap", "anyhow"]
